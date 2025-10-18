@@ -14,6 +14,7 @@ import ProjectDetailPage from "./pages/ProjectDetailPage";
 import StudentProjectsPage from "./pages/studentProjectPage";
 import { LoaderProvider } from "./context/LoaderContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NotFoundPage from "./pages/nof-found";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
     element: <FormPurposePage />,
   },
   {
-    path: "/login",
+    path: "/lecturer",
     element: <LoginPage />,
   },
    {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
         ],
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
 const root = ReactDOM.createRoot(document.getElementById("root"));

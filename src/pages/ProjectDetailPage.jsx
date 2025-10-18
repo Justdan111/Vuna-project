@@ -232,7 +232,7 @@ const DetailRow = ({ label, field, value, type = "text", editable = true }) => {
             field="panelist"
             value={project.panelist}
             type="select"
-            editable={true}
+            editable={false}
           />
           
           <DetailRow
@@ -289,6 +289,48 @@ const DetailRow = ({ label, field, value, type = "text", editable = true }) => {
               <p><strong>Remark:</strong> {project.remark || "—"}</p>
             </div>
           </div>
+
+        {/* Change History */}
+        <div className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200 shadow-lg">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">
+            Change History
+          </h3>
+
+          {project.history && project.history.length > 0 ? (
+            <div className="space-y-3 sm:space-y-4 max-h-64 overflow-y-auto pr-1">
+              {project.history
+                .slice()
+                .reverse()
+                .map((entry, index) => (
+                  <div
+                    key={index}
+                    className="p-3 sm:p-4 bg-gray-50 border border-gray-200 rounded-lg hover:shadow-sm transition-all duration-200"
+                  >
+                    <div className="flex justify-between items-start mb-1">
+                      <p className="text-sm sm:text-base font-semibold text-[#32936F]">
+                        {entry.editorName}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {new Date(entry.editedAt).toLocaleDateString()}{" "}
+                        {new Date(entry.editedAt).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                    <p className="text-gray-700 text-sm sm:text-base leading-snug">
+                      {entry.changes}
+                    </p>
+                  </div>
+                ))}
+            </div>
+          ) : (
+            <p className="text-gray-500 text-sm sm:text-base italic">
+              No changes have been made yet.
+            </p>
+          )}
+        </div>
+
 
           {/* Remark Actions */}
           <div className="bg-white rounded-lg sm:rounded-xl p-4 sm:p-6 border border-gray-200 shadow-lg">
