@@ -11,44 +11,65 @@ const AllProjectsPage = () => {
   const [sortBy, setSortBy] = useState("domain");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSearch = async () => {
+ const handleSearch = async () => {
   showLoader();
   setError("");
 
   try {
     let data;
+
     if (searchQuery.trim()) {
-      data = await searchProjects(searchQuery);
+      data = await searchProjects(searchQuery, currentPage, limit);
     } else {
-      data = await getAllProjects();
+      data = await getAllProjects(currentPage, limit);
     }
 
-    if (data?.data) {
-      setProjects(data.data);
+    if (data) {
+      // ✅ Set projects list
+      setProjects(data.data || []);
+
+      // ✅ Update pagination info
+      if (data.pagination) {
+        setTotalPages(data.pagination.totalPages);
+        setTotalRecords(data.pagination.total);
+        setLimit(data.pagination.limit);
+      } else {
+        // fallback if pagination missing
+        setTotalPages(1);
+        setTotalRecords(data.data?.length || 0);
+      }
+
+      console.log("✅ Projects fetched:", data.data);
+      console.log("📄 Pagination info:", data.pagination);
     } else {
+      // Handle case where data is null or malformed
       setProjects([]);
+      setTotalPages(1);
+      setTotalRecords(0);
     }
-
-    console.log("Projects fetched:", data.data);
   } catch (err) {
-    console.error("Fetch error:", err);
+    console.error("❌ Fetch error:", err);
     setError("Failed to load projects. Please try again.");
+    setProjects([]);
+    setTotalPages(1);
+    setTotalRecords(0);
   } finally {
     hideLoader();
   }
 };
 
-useEffect(() => {
-  const debounceTimer = setTimeout(() => {
-    handleSearch();
-  }, 1000);
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      handleSearch();
+    }, 1000);
 
-  return () => clearTimeout(debounceTimer);
-}, [currentPage, searchQuery, sortBy]);
-
+    return () => clearTimeout(debounceTimer);
+  }, [currentPage, searchQuery, sortBy]);
 
   const handlePrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -56,6 +77,11 @@ useEffect(() => {
 
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+    setCurrentPage(1); // Reset to first page when changing limit
   };
 
   return (
@@ -78,6 +104,7 @@ useEffect(() => {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
+                setCurrentPage(1); // Reset to first page on search
                 handleSearch();
               }
             }}
@@ -99,7 +126,10 @@ useEffect(() => {
             <option value="supervisor">Supervisor</option>
           </select>
         </div>
+        
       </div>
+
+
 
       {/* Loading / Error / Table */}
       {error ? (
@@ -146,3 +176,4 @@ useEffect(() => {
 };
 
 export default AllProjectsPage;
+

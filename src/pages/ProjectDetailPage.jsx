@@ -17,8 +17,6 @@ const ProjectDetailPage = () => {
   const { showLoader, hideLoader } = useLoader();
   const [error, setError] = useState("");
 
-
-
     useEffect(() => {
       const fetchProjects = async () => {
         showLoader();

@@ -11,9 +11,11 @@ const StudentProjectsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("domain");
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const totalPages = 200;
 
   const handleSearch = async () => {
     showLoader();
@@ -21,8 +23,9 @@ const StudentProjectsPage = () => {
 
     try {
       let data;
+      
       if (searchQuery.trim()) {
-        data = await searchStudentProjects(searchQuery);
+        data = await searchStudentProjects(searchQuery, currentPage, limit);
 
         // If backend returns an error field, show it as a toast and clear results
         if (data?.error) {
@@ -31,24 +34,42 @@ const StudentProjectsPage = () => {
           return;
         }
       } else {
-        data = await getAllStudentProjects();
+        data = await getAllStudentProjects( currentPage, limit);
       }
 
-      if (data?.data) {
-        setProjects(data.data);
+    if (data) {
+      // ✅ Set projects list
+      setProjects(data.data || []);
+
+      // ✅ Update pagination info
+      if (data.pagination) {
+        setTotalPages(data.pagination.totalPages);
+        setTotalRecords(data.pagination.total);
+        setLimit(data.pagination.limit);
       } else {
-        setProjects([]);
+        // fallback if pagination missing
+        setTotalPages(1);
+        setTotalRecords(data.data?.length || 0);
       }
 
-      console.log("Projects fetched:", data?.data ?? data);
-    } catch (err) {
-      console.error("Fetch error:", err);
-      setError("Failed to load projects. Please try again.");
-      toast.error("Failed to load projects. Please try again.");
-    } finally {
-      hideLoader();
+      console.log("✅ Projects fetched:", data.data);
+      console.log("📄 Pagination info:", data.pagination);
+    } else {
+      // Handle case where data is null or malformed
+      setProjects([]);
+      setTotalPages(1);
+      setTotalRecords(0);
     }
-  };
+  } catch (err) {
+    console.error("❌ Fetch error:", err);
+    setError("Failed to load projects. Please try again.");
+    setProjects([]);
+    setTotalPages(1);
+    setTotalRecords(0);
+  } finally {
+    hideLoader();
+  }
+};
 
 useEffect(() => {
   const debounceTimer = setTimeout(() => {
@@ -65,6 +86,11 @@ useEffect(() => {
 
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
+  const handleLimitChange = (newLimit) => {
+    setLimit(newLimit);
+    setCurrentPage(1); // Reset to first page when changing limit
   };
 
   return (
