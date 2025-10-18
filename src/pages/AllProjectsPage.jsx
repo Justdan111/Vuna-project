@@ -113,7 +113,7 @@ const AllProjectsPage = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2 sm:gap-3 bg-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 shadow-sm">
+        {/* <div className="flex items-center gap-2 sm:gap-3 bg-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 shadow-sm">
           <label className="text-gray-700 font-medium text-xs sm:text-sm whitespace-nowrap">
             Sort by:
           </label>
@@ -125,7 +125,7 @@ const AllProjectsPage = () => {
             <option value="domain">Domain</option>
             <option value="supervisor">Supervisor</option>
           </select>
-        </div>
+        </div> */}
         
       </div>
 
