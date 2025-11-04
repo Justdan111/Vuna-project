@@ -31,7 +31,11 @@ const AllProjectsPage = () => {
 
     if (data) {
       // ✅ Set projects list
-      setProjects(data.data || []);
+      const sorted = [...(data.data || [])].sort((a, b) => {
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+
+      setProjects(sorted);
 
       // ✅ Update pagination info
       if (data.pagination) {
