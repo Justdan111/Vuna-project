@@ -69,6 +69,7 @@ const AllProjectsPage = () => {
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
+      setCurrentPage(1);
       handleSearch();
     }, 1000);
 
