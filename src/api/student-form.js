@@ -15,8 +15,7 @@ export const submitProjectForm = async (formData) => {
     console.log("jajajajajajjaja2", response.data)
     return response.data;
   } catch (error) {
-    console.error("Error submitting form:", error);
-    throw error.response ? error.response.data : error;
+    throw error.response?.data || { error: "Network error" };
   }
 };
 

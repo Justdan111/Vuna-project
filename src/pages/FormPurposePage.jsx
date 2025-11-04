@@ -115,14 +115,8 @@ const handleSubmit = async (e) => {
       }, 1500);
     }
   } catch (error) {
-    console.error("Submission failed:", error);
-
-    // If backend sent a message about matric number or general issue
-    if (error?.response?.data?.error?.includes("matric")) {
-      toast.error("Matric number already exists.");
-    } else {
-      toast.error("Something went wrong. Please try again.");
-    }
+    const message = error?.error || error?.message || "Something went wrong.";
+    toast.error(message);
   } finally {
     setIsSubmitting(false);
   }
