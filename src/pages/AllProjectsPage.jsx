@@ -85,10 +85,10 @@ const AllProjectsPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-  const handleLimitChange = (newLimit) => {
-    setLimit(newLimit);
-    setCurrentPage(1);
-  };
+  // const handleLimitChange = (newLimit) => {
+  //   setLimit(newLimit);
+  //   setCurrentPage(1);
+  // };
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-[80px] sm:pt-[100px] lg:pt-[120px] px-4 sm:px-6 lg:px-8 pb-10">

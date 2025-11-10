@@ -4,7 +4,7 @@ import DocumentIcon from "../components/icons/DocumentIcon";
 import GlobeIcon from "../components/icons/GlobeIcon";
 import { getDashboardStats } from "../api/dashboard";
 import { useLoader } from "../context/LoaderContext";
-import { FileText, Globe, Folder } from 'lucide-react';
+import { Folder } from 'lucide-react';
 
 const DashboardPage = () => {
   const [stats, setStats] = useState({

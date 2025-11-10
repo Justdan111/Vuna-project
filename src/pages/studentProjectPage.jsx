@@ -88,10 +88,10 @@ useEffect(() => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
-  const handleLimitChange = (newLimit) => {
-    setLimit(newLimit);
-    setCurrentPage(1); // Reset to first page when changing limit
-  };
+  // const handleLimitChange = (newLimit) => {
+  //   setLimit(newLimit);
+  //   setCurrentPage(1); // Reset to first page when changing limit
+  // };
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-8 px-4 sm:px-6 md:px-8 pb-10">
