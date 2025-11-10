@@ -16,65 +16,66 @@ const AllProjectsPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
- const handleSearch = async () => {
-  showLoader();
-  setError("");
+  const handleSearch = async () => {
+    showLoader();
+    setError("");
 
-  try {
-    let data;
+    try {
+      let data;
 
-    if (searchQuery.trim()) {
-      data = await searchProjects(searchQuery, currentPage, limit);
-    } else {
-      data = await getAllProjects(currentPage, limit);
-    }
-
-    if (data) {
-      // ✅ Set projects list
-      const sorted = [...(data.data || [])].sort((a, b) => {
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
-
-      setProjects(sorted);
-
-      // ✅ Update pagination info
-      if (data.pagination) {
-        setTotalPages(data.pagination.totalPages);
-        setTotalRecords(data.pagination.total);
-        setLimit(data.pagination.limit);
+      if (searchQuery.trim()) {
+        data = await searchProjects(searchQuery, currentPage, limit);
       } else {
-        // fallback if pagination missing
-        setTotalPages(1);
-        setTotalRecords(data.data?.length || 0);
+        data = await getAllProjects(currentPage, limit);
       }
 
-      console.log("✅ Projects fetched:", data.data);
-      console.log("📄 Pagination info:", data.pagination);
-    } else {
-      // Handle case where data is null or malformed
+      if (data) {
+        const sorted = [...(data.data || [])].sort((a, b) => {
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+
+        setProjects(sorted);
+
+        if (data.pagination) {
+          setTotalPages(data.pagination.totalPages);
+          setTotalRecords(data.pagination.total);
+          setLimit(data.pagination.limit);
+        } else {
+          setTotalPages(1);
+          setTotalRecords(data.data?.length || 0);
+        }
+
+        console.log("✅ Projects fetched:", data.data);
+        console.log("📄 Pagination info:", data.pagination);
+      } else {
+        setProjects([]);
+        setTotalPages(1);
+        setTotalRecords(0);
+      }
+    } catch (err) {
+      console.error("❌ Fetch error:", err);
+      setError("Failed to load projects. Please try again.");
       setProjects([]);
       setTotalPages(1);
       setTotalRecords(0);
+    } finally {
+      hideLoader();
     }
-  } catch (err) {
-    console.error("❌ Fetch error:", err);
-    setError("Failed to load projects. Please try again.");
-    setProjects([]);
-    setTotalPages(1);
-    setTotalRecords(0);
-  } finally {
-    hideLoader();
-  }
-};
+  };
 
+  // ✅ Debounce search + run on page change
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
-      setCurrentPage(1);
       handleSearch();
-    }, 1000);
+    }, 500);
 
     return () => clearTimeout(debounceTimer);
   }, [currentPage, searchQuery, sortBy]);
+
+  // ✅ Only reset page on search text change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const handlePrevPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -86,19 +87,17 @@ const AllProjectsPage = () => {
 
   const handleLimitChange = (newLimit) => {
     setLimit(newLimit);
-    setCurrentPage(1); // Reset to first page when changing limit
+    setCurrentPage(1);
   };
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pt-[80px] sm:pt-[100px] lg:pt-[120px] px-4 sm:px-6 lg:px-8 pb-10">
-      {/* Header */}
       <div className="mb-6 sm:mb-8">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1E523E] mb-2">
           All Student Projects
         </h1>
       </div>
 
-      {/* Search and Sort Controls */}
       <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 mb-6">
         <div className="relative flex-1 w-full sm:max-w-md">
           <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
@@ -109,7 +108,7 @@ const AllProjectsPage = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 e.preventDefault();
-                setCurrentPage(1); // Reset to first page on search
+                setCurrentPage(1);
                 handleSearch();
               }
             }}
@@ -117,26 +116,8 @@ const AllProjectsPage = () => {
             className="w-full pl-10 sm:pl-12 pr-4 py-2.5 sm:py-3 text-sm sm:text-base bg-white border-2 border-gray-200 rounded-xl outline-none transition-all duration-300 focus:border-[#32936F] focus:shadow-lg focus:shadow-[#32936F]/10"
           />
         </div>
-
-        {/* <div className="flex items-center gap-2 sm:gap-3 bg-white px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 border-gray-200 shadow-sm">
-          <label className="text-gray-700 font-medium text-xs sm:text-sm whitespace-nowrap">
-            Sort by:
-          </label>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="bg-transparent outline-none text-gray-700 font-medium cursor-pointer text-xs sm:text-sm"
-          >
-            <option value="domain">Domain</option>
-            <option value="supervisor">Supervisor</option>
-          </select>
-        </div> */}
-        
       </div>
 
-
-
-      {/* Loading / Error / Table */}
       {error ? (
         <div className="text-center text-red-600 py-10 text-sm sm:text-base">{error}</div>
       ) : (
@@ -166,6 +147,7 @@ const AllProjectsPage = () => {
             <ChevronLeft className="w-4 h-4" />
             <span className="hidden xs:inline">Prev</span>
           </button>
+
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
@@ -179,6 +161,7 @@ const AllProjectsPage = () => {
     </div>
   );
 };
+
 
 export default AllProjectsPage;
 
