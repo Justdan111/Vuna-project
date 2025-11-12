@@ -12,7 +12,7 @@ const Sidebar = () => {
   // 🔒 Handle logout
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/"); 
+    navigate("/lecturer"); 
   };
 
   // Close mobile menu when clicking a link
