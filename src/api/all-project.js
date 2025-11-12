@@ -84,3 +84,21 @@ export const searchStudentProjects = async (query, page = 1, limit = 10) => {
     throw error.response ? error.response.data : error;
   }
 };
+
+export const sortStudentProjectsByDomain = async (domain, order = 'asc', page = 1, limit = 10) => {
+  try {
+    const response = await axiosInstance.get("/submission/sort", {
+      params: {
+        domain,
+        order,
+        page,
+        limit,
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error sorting student projects:", error);
+    throw error.response ? error.response.data : error;
+  }
+};
